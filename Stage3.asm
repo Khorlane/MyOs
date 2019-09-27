@@ -219,12 +219,12 @@ KbXlate:
     MOV   AL,[KbChar]                   ; Translate
     CMP   AL,010h                       ;  010h, the 
     JE    KbKeyQ                        ;   scancode 
-    JMP   KbXlateDone                   ;    for the Q key,
+    JMP   KbXlateDone                   ;    for the q key,
 KbKeyQ:                                 ;     to the
-    MOV   AL,051h                       ;      ASCII code
-    MOV   [KbChar],AL                   ;        for an
-KbXlateDone:                            ;         uppercase
-    RET                                 ;          letter Q
+    MOV   AL,071h                       ;      ASCII code
+    MOV   [KbChar],AL                   ;        for a
+KbXlateDone:                            ;         lowercase
+    RET                                 ;          letter q
 
 ;---------
 ; Hex Dump
@@ -318,7 +318,7 @@ GetKey1:
     MOV   [Char],BL                     ;    on the
     CALL  PutChar                       ;     next row
     MOV   BL,[KbChar]                   ; Quit
-    CMP   BL,051h                       ;  when Q (ASCII 051h)
+    CMP   BL,071h                       ;  when q (ASCII 071h)
     JE    AllDone                       ;   is
     JMP   GetKey                        ;    pressed
 

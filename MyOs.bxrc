@@ -629,7 +629,7 @@ private_colormap: enabled=0
 # write protect switch. By default it is turned off.
 #=======================================================================
 #floppya: 1_44=C:\DropBox\Steve\MyOs\MMURTL\NICKOS\MyOs.bin, status=inserted
-floppya: image=C:\DropBox\Steve\MyOs\MMURTL\BrokenThorn\floppy.img, status=inserted
+floppya: image=C:\DropBox\MyOs\floppy.img, status=inserted
 #floppya: 1_44=/dev/fd0, status=inserted
 #floppya: image=../1.44, status=inserted
 #floppya: 1_44=/dev/fd0H1440, status=inserted
