@@ -1,0 +1,79 @@
+--------------------------------------
+- Build MyOs - No boot sector change -
+--------------------------------------
+Open cmd.exe
+> Build2
+> Build3
+> Exit
+
+Open DosBox1
+> Build4 is automatically executed and copies Stage2.bin and Stage3.bin to Floppy
+> Exit
+
+Open MyOs.bxrc
+
+------------------------------------
+- Build MyOs - Boot sector changed -
+------------------------------------
+Open ImDisk Virtual Disk Driver
+- Mount new
+- Image file:       browse for floppy.img
+- Drive letter:     A
+- Image file acess: Virtual disk
+- Device type:      Floppy
+- Click OK
+- Right click on Drive A: and Format it
+- Select Drive A:
+- Click Remove
+- Close ImDisk
+Open cmd.exe
+> Build1  (rebuild our boot sector)
+> Exit
+Write the Boot Sector
+  - Open Stage1.bin in UltraEdit
+  - Open floppy.img in UltraEdit
+  - Copy Stage1.bin (512 bytes)
+  - Paste into floppy.img (first 512 bytes)
+  - Close UltraEdit saving floppy.img
+Open cmd.exe
+> Build2 (only required if Stage2.asm was changed)
+> Build3 (only required if Stage3.asm was changed)
+> Exit
+Open DosBox1
+> Build4 (required even if no changes to Stage2/Stage3)
+> Exit
+
+Open MyOs.bxrc
+
+
+-----------------
+- Orginal Build -
+-----------------
+
+C:\Steve\MyOs\BrokenThorn\Demo4\Stage1
+--------------------------------------
+nasm -f bin Boot1.asm -o Boot1.bin
+
+rem PARTCOPY Boot1.bin  0   3 -f0  0 
+rem PARTCOPY Boot1.bin 3E 1C2 -f0 3E 
+
+pause
+
+
+C:\Steve\MyOs\BrokenThorn\Demo4\Stage2
+--------------------------------------
+nasm -f bin Stage2.asm -o KRNLDR.SYS
+
+rem copy KRNLDR.SYS  A:\KRNLDR.SYS
+
+
+pause
+
+C:\Steve\MyOs\BrokenThorn\Demo4\Kernel
+--------------------------------------
+nasm -f bin Stage3.asm -o KRNL.SYS
+
+rem copy KRNL.SYS  A:\KRNL.SYS
+
+
+pause
