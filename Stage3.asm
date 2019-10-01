@@ -212,19 +212,26 @@ KbGetIt:
     IN    AL,060h                       ; Obtain scancode from
     MOV   [KbChar],AL                   ;   Keyboard I/O Port
     RET                                 ; All done!
-    ;-------------------
-    ; Translate scancode
-    ;-------------------
+    ;--------------------
+    ; Translate scan code
+    ;--------------------
 KbXlate:
-    MOV   AL,[KbChar]                   ; Translate
-    CMP   AL,010h                       ;  010h, the 
-    JE    KbKeyQ                        ;   scancode 
-    JMP   KbXlateDone                   ;    for the q key,
-KbKeyQ:                                 ;     to the
-    MOV   AL,071h                       ;      ASCII code
-    MOV   [KbChar],AL                   ;        for a
-KbXlateDone:                            ;         lowercase
-    RET                                 ;          letter q
+    MOV   AL,[KbChar]                   ; Put scan code in AL
+    CMP   AL,010h                       ; Q
+    JE    KbKeyQ                        ;  Key?
+    CMP   AL,011h                       ; W
+    JE    KbKeyW                        ;  Key?
+    JMP   KbXlateDone                   ; None of the above keys was pressed
+KbKeyQ:                                 ; Q
+    MOV   AL,071h                       ;  key
+    MOV   [KbChar],AL                   ;   was
+    JMP   KbXlateDone                   ;    pressed
+KbKeyW:                                 ; W          
+    MOV   AL,077h                       ;  key       
+    MOV   [KbChar],AL                   ;   was      
+    JMP   KbXlateDone                   ;    pressed 
+KbXlateDone:                            ;
+    RET                                 ; All done!
 
 ;---------
 ; Hex Dump

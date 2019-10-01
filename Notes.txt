@@ -1,21 +1,27 @@
+---------------
+- To run MyOs -
+---------------
+Just double click MyOs.bxrc
+
 --------------------------------------
 - Build MyOs - No boot sector change -
 --------------------------------------
-Open cmd.exe
-> Build2
-> Build3
-> Exit
-
-Open DosBox1
-> Build4 is automatically executed and copies Stage2.bin and Stage3.bin to Floppy
-> Exit
-
-Open MyOs.bxrc
+Run BuildIt.bat which does the following
+- Assembles Stage3.asm producing
+  - Stage3.lst
+  - Stage3.bin
+- Executes DosBox using DosBox1.txt which does the following
+  - Mounts floppy.img (our floppy) on Drive A:
+  - Executes Build4.bat which does the following
+    - Copies Stage2.bin to A:
+    - Copies State3.bin to A:
+- Fires up MyOs using Bochs and MyOs.bxrc
 
 ------------------------------------
 - Build MyOs - Boot sector changed -
 ------------------------------------
-Open ImDisk Virtual Disk Driver
+Format floppy.img
+- Open ImDisk Virtual Disk Driver
 - Mount new
 - Image file:       browse for floppy.img
 - Drive letter:     A
@@ -26,54 +32,68 @@ Open ImDisk Virtual Disk Driver
 - Select Drive A:
 - Click Remove
 - Close ImDisk
-Open cmd.exe
-> Build1  (rebuild our boot sector)
-> Exit
+
+Run Build1.bat which does the following
+- Assembles Stage1.asm producing
+  - Stage1.lst
+  - Stage1.bin
+
 Write the Boot Sector
-  - Open Stage1.bin in UltraEdit
-  - Open floppy.img in UltraEdit
-  - Copy Stage1.bin (512 bytes)
-  - Paste into floppy.img (first 512 bytes)
-  - Close UltraEdit saving floppy.img
-Open cmd.exe
-> Build2 (only required if Stage2.asm was changed)
-> Build3 (only required if Stage3.asm was changed)
-> Exit
-Open DosBox1
-> Build4 (required even if no changes to Stage2/Stage3)
-> Exit
+- Open Stage1.bin in UltraEdit
+- Open floppy.img in UltraEdit
+- Copy Stage1.bin (512 bytes)
+- Paste into floppy.img (first 512 bytes)
+- Close UltraEdit saving floppy.img
 
-Open MyOs.bxrc
+Run Build2.bat (only required if Stage2.asm was changed)
+Run Build3.bat (only required if Stage3.asm was changed)
 
+Double click DosBox1 which does the following
+- Mounts floppy.img (our floppy) on Drive A:
+- Executes Build4.bat which does the following
+  - Copies Stage2.bin to A:
+  - Copies State3.bin to A:
 
------------------
-- Orginal Build -
------------------
+Open MyOs.bxrc to start MyOs
 
-C:\Steve\MyOs\BrokenThorn\Demo4\Stage1
---------------------------------------
-nasm -f bin Boot1.asm -o Boot1.bin
+---------
+- Files -
+---------
+.git                        The Git folder
+.gitattributes              The Git attributes
+.gitignore                  The Git Ignore file
 
-rem PARTCOPY Boot1.bin  0   3 -f0  0 
-rem PARTCOPY Boot1.bin 3E 1C2 -f0 3E 
+AFD*                        Advance Fullscreen Debug
 
-pause
+Build1.bat                  Assembles Stage1.asm
+Build2.bat                  Assembles Stage2.asm
+Build3.bat                  Assembles Stage3.asm
+BuildIt.bat                 Build Stage3 and run MyOs
 
+cmd.exe                     Windows 10 command line
+DEBUG.COM                   https://en.wikipedia.org/wiki/Debug_(command)
 
-C:\Steve\MyOs\BrokenThorn\Demo4\Stage2
---------------------------------------
-nasm -f bin Stage2.asm -o KRNLDR.SYS
+DosBox                      Runs DosBox using DosBox.txt
+DosBox.txt                  See above
+DosBox1                     Runs DosBox using DosBox1.txt
+DosBox1.txt                 See above
 
-rem copy KRNLDR.SYS  A:\KRNLDR.SYS
+floppy.img                  A floppy 1.44 MB
+ImDisk Virtual Disk Driver  https://sourceforge.net/projects/imdisk-toolkit/
+Keyboard Scan Codes.xlsx    Keyboard scan codes
+MyOs.bxrc                   Bochs config file for running MyOs
+nasm.exe                    https://en.wikipedia.org/wiki/Netwide_Assembler
 
+Notes.txt                   This file
 
-pause
+Stage1.asm                  Boot sector code
+Stage1.bin                  Boot sector binary
+Stage1.lst                  Boot sector listing
 
-C:\Steve\MyOs\BrokenThorn\Demo4\Kernel
---------------------------------------
-nasm -f bin Stage3.asm -o KRNL.SYS
+Stage2.asm                  Kernel loader code
+Stage2.bin                  Kernel loader binary
+Stage2.lst                  Kernel loader listing
 
-rem copy KRNL.SYS  A:\KRNL.SYS
-
-
-pause
+Stage1.asm                  Kernel code
+Stage1.bin                  Kernel binary
+Stage1.lst                  Kernel listing

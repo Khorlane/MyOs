@@ -242,7 +242,3 @@ ipx=false
 mount c C:\Dropbox\MyOs
 imgmount a "C:\Dropbox\MyOs\floppy.img" -t floppy -fs fat
 c:
-build4.bat exit
-#exit
-#mount a a:\ -t floppy
-#path %path%;C:\TASM;C:\TC
