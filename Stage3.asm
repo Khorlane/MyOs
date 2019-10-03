@@ -203,7 +203,7 @@ KbRead:
 KbWait:
     IN    AL,064h                       ; Read 8042 Status Register (bit 1 is input buffer status (0=empty, 1=full)  
     TEST  AL,1                          ; If bit 1 
-    JNZ   KbGetIt                       ;  go get scan code
+    JNZ   KbGetIt                       ;  go get scancode
     LOOP  KbWait                        ; Keep looping
     MOV   AL,0FFh                       ; No scan
     MOV   [KbChar],AL                   ;  code received
@@ -212,25 +212,25 @@ KbGetIt:
     IN    AL,060h                       ; Obtain scancode from
     MOV   [KbChar],AL                   ;   Keyboard I/O Port
     RET                                 ; All done!
-    ;--------------------
-    ; Translate scan code
-    ;--------------------
+    ;-------------------
+    ; Translate scancode
+    ;-------------------
 KbXlate:
-    MOV   AL,[KbChar]                   ; Put scan code in AL
-    CMP   AL,010h                       ; Q
-    JE    KbKeyQ                        ;  Key?
-    CMP   AL,011h                       ; W
-    JE    KbKeyW                        ;  Key?
-    JMP   KbXlateDone                   ; None of the above keys was pressed
-KbKeyQ:                                 ; Q
-    MOV   AL,071h                       ;  key
-    MOV   [KbChar],AL                   ;   was
-    JMP   KbXlateDone                   ;    pressed
-KbKeyW:                                 ; W          
-    MOV   AL,077h                       ;  key       
-    MOV   [KbChar],AL                   ;   was      
-    JMP   KbXlateDone                   ;    pressed 
-KbXlateDone:                            ;
+    XOR   EAX,EAX
+    XOR   ESI,ESI
+    MOV   ECX,ScancodeSz
+    MOV   AL,[KbChar]                   ; Put scancode in AL
+KbXlateLoop1:
+    CMP   AL,[Scancode+ESI]             ; Compare to Scancode
+    JE    KbXlateFound                  ; Match!
+    INC   ESI                           ; Bump ESI
+    LOOP  KbXlateLoop1                  ; Check next
+    MOV   AL,'?'                        ; Not found defaults to ? for now
+    JMP   KbXlateDone                   ; Jump to done
+KbXlateFound:
+    MOV   AL,[CharCode+ESI]             ; Put ASCII character matching the Scancode in AL
+KbXlateDone:
+    MOV   [KbChar],AL                   ; Put translated char in KbChar
     RET                                 ; All done!
 
 ;---------
@@ -248,7 +248,7 @@ HexDump1:
     MOV   ECX,8                         ; Setup
     XOR   EDX,EDX                       ;  for translating
     MOV   DL,[KbChar]                   ;   the keyboard
-    MOV   EBX,HexDigits                 ;    scan code
+    MOV   EBX,HexDigits                 ;    scancode
     MOV   ESI,Buffer+9                  ;     to hex display
 HexDump2:
     MOV   AL,DL                         ; Translate
@@ -381,6 +381,11 @@ Row         DB  0                       ; Row (1-25)
 Col         DB  0                       ; Col (1-80)
 VidAdr      DD  0                       ; Video Address
 HexDigits   DB  "0123456789ABCDEF"
+
+Scancode    DB  10h, 11h
+ScancodeSz  DB  ScancodeSz-Scancode
+CharCode    DB  71h, 77h
+CharCodeSz  DB  ScancodeSz-Scancode
 
 ;--------------------------------------------------------------------------------------------------
 ; Equates
