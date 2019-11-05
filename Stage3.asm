@@ -326,8 +326,8 @@ GetKey1:
     CALL  PutChar                       ;     next row
     MOV   BL,[KbChar]                   ; Quit
     CMP   BL,071h                       ;  when q (ASCII 071h)
-    JE    AllDone                       ;   is
-    JMP   GetKey                        ;    pressed
+    JE    AllDone                       ;   is pressed
+    JMP   GetKey                        ; Loop
 
 AllDone:
     ;---------------
