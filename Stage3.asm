@@ -295,7 +295,25 @@ Stage3:
     CALL  PutStr                        ;  a New Line
     MOV   EBX,Msg2                      ; Put
     CALL  PutStr                        ;  Msg2
-    
+
+    ;------------------------
+    ; Initialize the 8259 PIC
+    ;------------------------
+    MOV   AL,00010001b                  ; Set ICW1
+    OUT   PIC1_CTRL,AL                  ;  Intialize
+    OUT   PIC2_CTRL,AL                  ;  8259
+    MOV   AL,020h                       ; Set ICW2
+    OUT   PIC1_DATA,AL                  ;  Map
+    MOV   AL,028h                       ;  IRQs
+    OUT   PIC2_DATA,AL                  ;  32-47
+    MOV   AL,00000100b                  ; Set ICW3
+    OUT   PIC1_DATA,AL                  ;  Connect PIC1
+    MOV   AL,00000010b                  ;  and PIC2
+    OUT   PIC2_DATA,AL                  ;  via IRQ line 2
+    MOV   AL,00000001b                  ; Set ICW4
+    OUT   PIC1_DATA,AL                  ;  We are in
+    OUT   PIC2_DATA,AL                  ;  80x86 mode
+
     ;-------------------
     ; Get Keyboard input
     ;-------------------
@@ -388,7 +406,7 @@ CharCode    DB  71h, 77h
 CharCodeSz  DB  ScancodeSz-Scancode
 
 ;--------------------------------------------------------------------------------------------------
-; Equates
+; Video
 ;--------------------------------------------------------------------------------------------------
 VidMem      EQU 0B8000h                 ; Video Memory (Starting Address)
 TotCol      EQU 80                      ; width and height of screen
@@ -396,3 +414,12 @@ Black       EQU 00h                     ; Black
 Cyan        EQU 03h                     ; Cyan
 Purple      EQU 05h                     ; Purple
 White       EQU 0Fh                     ; White
+;--------------------------------------------------------------------------------------------------
+; PIC - 8259 Programmable Interrupt Controller
+;--------------------------------------------------------------------------------------------------
+PIC1        EQU 020h                    ; PIC - Master
+PIC2        EQU 0A0h                    ; PIC - Slave
+PIC1_CTRL   EQU PIC1                    ; PIC1 Command port
+PIC1_DATA   EQU PIC1+1                  ; PIC1 Data port
+PIC2_CTRL   EQU PIC2                    ; PIC2 Command port
+PIC2_DATA   EQU PIC2+1                  ; PIC2 Data port
