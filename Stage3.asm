@@ -262,7 +262,7 @@ HexDump2:
     RET                                 ; Return to caller
 
 ;--------------------------------------------------------------------------------------------------
-; Stage3 - Our Kernel!
+; Stage3 - Our Kernel code starts executing here!
 ;--------------------------------------------------------------------------------------------------
 Stage3:
     ;--------------
@@ -314,6 +314,20 @@ Stage3:
     OUT   PIC1_DATA,AL                  ;  We are in
     OUT   PIC2_DATA,AL                  ;  80x86 mode
 
+    ;--------------
+    ; Set Timer IDT
+    ;--------------
+    MOV   EDX,020h                      ; Timer IRQ 0 is now IRQ 32 (020h)
+    SHL   EDX,3                         ; Position into
+    ADD   EDX,IDT                       ;  the IDT
+    MOV   WORD [EDX+4],08E00h           ; Stash
+    MOV   EAX,IsrTimer                  ;  stuff
+    MOV   WORD [EDX],AX                 ;  into IDT
+    SHR   EAX,16                        ;  to link IRQ 32
+    MOV   WORD [EDX+6],AX               ;  to the correct ISR  
+    MOV   WORD [EDX+2],008h             ;  which is IsrTimer
+    HLT                                 ; Halt and wait for timer interrupt to get us going again
+
     ;-------------------
     ; Get Keyboard input
     ;-------------------
@@ -361,12 +375,27 @@ AllDone:
     ;---------------
     ; Stop execution
     ;---------------
-    CLI
-    HLT
+    CLI                                 ; Disable interrupts
+    HLT                                 ; Halt
+
+    ;--------------------
+    ; Temporary Timer ISR
+    ;--------------------
+IsrTimer:
+    PUSHAD
+    MOV   EBX,NewLine                   ; Put
+    CALL  PutStr                        ;  a New Line
+    MOV   EBX,Msg4                      ; Put
+    CALL  PutStr                        ;  Msg4
+    MOV   AL,020h                       ; Send EOI - End of Interrupt
+    OUT   PIC1_CTRL,AL                  ;  to master PIC
+    POPAD
+    IRETD
 
 ;--------------------------------------------------------------------------------------------------
 ; Interrupt Descriptor Table (IDT)
 ;--------------------------------------------------------------------------------------------------
+IDT:
 IDT1:
 TIMES 2048  DB 0                        ; The IDT is exactly 2048 bytes - 256 entries 8 bytes each
 ;-------------------
@@ -387,6 +416,7 @@ IDT2:
 String  Msg1,"------   MyOs v0.1.2   -----"
 String  Msg2,"------  32 Bit Kernel  -----"
 String  Msg3,"Our Kernel has ended!!"
+String  Msg4,"ISR - Timer - Fired"
 String  NewLine,0Ah
 String  Buffer,"XXXXXXXX"
 
