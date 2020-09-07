@@ -94,6 +94,6 @@ Stage2.asm                  Kernel loader code
 Stage2.bin                  Kernel loader binary
 Stage2.lst                  Kernel loader listing
 
-Stage1.asm                  Kernel code
-Stage1.bin                  Kernel binary
-Stage1.lst                  Kernel listing
+Stage3.asm                  Kernel code
+Stage3.bin                  Kernel binary
+Stage3.lst                  Kernel listing
